@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.santint.mapper.TKitchenMapper">
+
+    <resultMap type="TKitchen" id="TKitchenResult">
+        <result property="id" column="id"/>
+        <result property="kitchenId" column="kitchen_id"/>
+        <result property="username" column="userName"/>
+        <result property="password" column="password"/>
+        <result property="name" column="name"/>
+        <result property="address" column="address"/>
+        <result property="person" column="person"/>
+        <result property="phone" column="phone"/>
+        <result property="createTime" column="create_time"/>
+        <result property="userToken" column="user_token"/>
+        <result property="status" column="status"/>
+    </resultMap>
+
+    <sql id="selectTKitchenVo">
+        select id, kitchen_id, userName, password, name, address, person, phone, create_time, user_token, status from t_kitchen
+    </sql>
+
+    <select id="selectTKitchenList" parameterType="TKitchen" resultMap="TKitchenResult">
+        <include refid="selectTKitchenVo"/>
+        <where>
+            <if test="kitchenId != null ">and kitchen_id = #{kitchenId}</if>
+            <if test="username != null  and username != ''">and userName like concat('%', #{username}, '%')</if>
+            <if test="password != null  and password != ''">and password = #{password}</if>
+            <if test="name != null  and name != ''">and name like concat('%', #{name}, '%')</if>
+            <if test="address != null  and address != ''">and address like concat('%', #{address}, '%')</if>
+            <if test="person != null  and person != ''">and person like concat('%', #{person}, '%')</if>
+            <if test="phone != null  and phone != ''">and phone like concat('%', #{phone}, '%')</if>
+            <if test="userToken != null  and userToken != ''">and user_token = #{userToken}</if>
+            <if test="status != null ">and status = #{status}</if>
+        </where>
+    </select>
+
+    <select id="selectTKitchenById" parameterType="Long" resultMap="TKitchenResult">
+        <include refid="selectTKitchenVo"/>
+        where id = #{id}
+    </select>
+
+
+    <select id="checkKitNameUnique" parameterType="String" resultType="int">
+        select count(1) from t_kitchen where name=#{name}
+    </select>
+
+
+    <select id="selectTKitchenByName" parameterType="String" resultMap="TKitchenResult">
+        <include refid="selectTKitchenVo"/>
+        where name = #{name}
+    </select>
+
+    <!-- 验证门店属性是否唯一 -->
+    <select id="checkTkitchenUnique" resultMap="TKitchenResult">
+        <include refid="selectTKitchenVo"/>
+
+        <where>
+            <if test="name !=null and name !=''">
+                and name = #{name}
+            </if>
+
+            <if test="phone !=null and phone !=''">
+                and phone = #{phone}
+            </if>
+        </where>
+
+    </select>
+
+
+    <insert id="insertTKitchen" parameterType="TKitchen" useGeneratedKeys="true" keyProperty="id">
+        insert into t_kitchen
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="kitchenId != null ">kitchen_id,</if>
+            <if test="username != null  and username != ''">userName,</if>
+            <if test="password != null  and password != ''">password,</if>
+            <if test="name != null  and name != ''">name,</if>
+            <if test="address != null  and address != ''">address,</if>
+            <if test="person != null  and person != ''">person,</if>
+            <if test="phone != null  and phone != ''">phone,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="userToken != null  and userToken != ''">user_token,</if>
+            <if test="status != null ">status,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="kitchenId != null ">#{kitchenId},</if>
+            <if test="username != null  and username != ''">#{username},</if>
+            <if test="password != null  and password != ''">#{password},</if>
+            <if test="name != null  and name != ''">#{name},</if>
+            <if test="address != null  and address != ''">#{address},</if>
+            <if test="person != null  and person != ''">#{person},</if>
+            <if test="phone != null  and phone != ''">#{phone},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="userToken != null  and userToken != ''">#{userToken},</if>
+            <if test="status != null ">#{status},</if>
+        </trim>
+    </insert>
+
+    <update id="updateTKitchen" parameterType="TKitchen">
+        update t_kitchen
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="kitchenId != null ">kitchen_id = #{kitchenId},</if>
+            <if test="username != null  and username != ''">userName = #{username},</if>
+            <if test="password != null  and password != ''">password = #{password},</if>
+            <if test="name != null  and name != ''">name = #{name},</if>
+            <if test="address != null  and address != ''">address = #{address},</if>
+            <if test="person != null  and person != ''">person = #{person},</if>
+            <if test="phone != null  and phone != ''">phone = #{phone},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="userToken != null  and userToken != ''">user_token = #{userToken},</if>
+            <if test="status != null ">status = #{status},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTKitchenById" parameterType="Long">
+        delete from t_kitchen where id = #{id}
+    </delete>
+
+    <delete id="deleteTKitchenByIds" parameterType="String">
+        delete from t_kitchen where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

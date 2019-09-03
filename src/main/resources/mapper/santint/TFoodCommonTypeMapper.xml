@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.santint.mapper.TFoodCommonTypeMapper">
+
+    <resultMap type="TFoodCommonType" id="TFoodCommonTypeResult">
+        <result property="id" column="id"/>
+        <result property="code" column="code"/>
+        <result property="name" column="name"/>
+        <result property="level" column="level"/>
+        <result property="pcode" column="pcode"/>
+        <result property="status" column="status"/>
+        <result property="isdel" column="isdel"/>
+        <result property="parentName" column="parent_name"/>
+    </resultMap>
+
+    <sql id="selectTFoodCommonTypeVo">
+        select id, code, name, level, pcode, status, isdel from t_food_common_type
+    </sql>
+
+    <select id="selectTFoodCommonTypeList" parameterType="TFoodCommonType" resultMap="TFoodCommonTypeResult">
+        <include refid="selectTFoodCommonTypeVo"/>
+        <where>
+            <if test="code != null  and code != ''">and code = #{code}</if>
+            <if test="name != null  and name != ''">and name like concat('%', #{name}, '%')</if>
+            <if test="level != null ">and level = #{level}</if>
+            <if test="pcode != null  and pcode != ''">and pcode = #{pcode}</if>
+            <if test="status != null ">and status = #{status}</if>
+            <if test="isdel != null ">and isdel = #{isdel}</if>
+        </where>
+        order by pcode
+    </select>
+
+    <select id="selectTFoodCommonTypeById" parameterType="Long" resultMap="TFoodCommonTypeResult">
+        select t.id, t.code, t.name, t.level, t.pcode, t.status, t.isdel, p.name as parent_name
+        from t_food_common_type t
+        left join t_food_common_type p on p.id = t.pcode
+        where t.id = #{id}
+    </select>
+
+    <insert id="insertTFoodCommonType" parameterType="TFoodCommonType" useGeneratedKeys="true" keyProperty="id">
+        insert into t_food_common_type
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="code != null  and code != ''">code,</if>
+            <if test="name != null  and name != ''">name,</if>
+            <if test="level != null ">level,</if>
+            <if test="pcode != null  and pcode != ''">pcode,</if>
+            <if test="status != null ">status,</if>
+            <if test="isdel != null ">isdel,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="code != null  and code != ''">#{code},</if>
+            <if test="name != null  and name != ''">#{name},</if>
+            <if test="level != null ">#{level},</if>
+            <if test="pcode != null  and pcode != ''">#{pcode},</if>
+            <if test="status != null ">#{status},</if>
+            <if test="isdel != null ">#{isdel},</if>
+        </trim>
+    </insert>
+
+    <update id="updateTFoodCommonType" parameterType="TFoodCommonType">
+        update t_food_common_type
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="code != null  and code != ''">code = #{code},</if>
+            <if test="name != null  and name != ''">name = #{name},</if>
+            <if test="level != null ">level = #{level},</if>
+            <if test="pcode != null  and pcode != ''">pcode = #{pcode},</if>
+            <if test="status != null ">status = #{status},</if>
+            <if test="isdel != null ">isdel = #{isdel},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTFoodCommonTypeById" parameterType="Long">
+        delete from t_food_common_type where id = #{id}
+    </delete>
+
+    <delete id="deleteTFoodCommonTypeByIds" parameterType="String">
+        delete from t_food_common_type where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

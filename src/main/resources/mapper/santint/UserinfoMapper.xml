@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.santint.mapper.UserinfoMapper">
+
+    <resultMap type="Userinfo" id="UserinfoResult">
+        <result property="id" column="id"/>
+        <result property="userid" column="userid"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="paypassword" column="paypassword"/>
+        <result property="headaddr" column="headaddr"/>
+        <result property="nickname" column="nickname"/>
+        <result property="sex" column="sex"/>
+        <result property="birthday" column="birthday"/>
+        <result property="nation" column="nation"/>
+        <result property="tastepre" column="tastepre"/>
+        <result property="phone" column="phone"/>
+        <result property="growvalue" column="growvalue"/>
+        <result property="email" column="email"/>
+        <result property="userinfover" column="userinfover"/>
+        <result property="mutilnewestver" column="mutilnewestver"/>
+        <result property="token" column="token"/>
+        <result property="falg" column="falg"/>
+        <result property="createTime" column="create_time"/>
+        <result property="userip" column="userIP"/>
+        <result property="userport" column="userPort"/>
+    </resultMap>
+
+    <sql id="selectUserinfoVo">
+        select id, userid, username, password, paypassword, headaddr, nickname, sex, birthday, nation, tastepre, phone,
+        growvalue, email, userinfover, mutilnewestver, token, falg, create_time, userIP, userPort from userinfo
+    </sql>
+
+    <select id="selectUserinfoList" parameterType="Userinfo" resultMap="UserinfoResult">
+        <include refid="selectUserinfoVo"/>
+        <where>
+            <if test="userid != null  and userid != ''">and userid = #{userid}</if>
+            <if test="username != null  and username != ''">and username like concat('%', #{username}, '%')</if>
+            <if test="password != null  and password != ''">and password = #{password}</if>
+            <if test="paypassword != null  and paypassword != ''">and paypassword = #{paypassword}</if>
+            <if test="headaddr != null  and headaddr != ''">and headaddr = #{headaddr}</if>
+            <if test="nickname != null  and nickname != ''">and nickname like concat('%', #{nickname}, '%')</if>
+            <if test="sex != null ">and sex = #{sex}</if>
+            <if test="birthday != null ">and birthday = #{birthday}</if>
+            <if test="nation != null  and nation != ''">and nation = #{nation}</if>
+            <if test="tastepre != null ">and tastepre = #{tastepre}</if>
+            <if test="phone != null  and phone != ''">and phone = #{phone}</if>
+            <if test="growvalue != null ">and growvalue = #{growvalue}</if>
+            <if test="email != null  and email != ''">and email = #{email}</if>
+            <if test="userinfover != null  and userinfover != ''">and userinfover = #{userinfover}</if>
+            <if test="mutilnewestver != null  and mutilnewestver != ''">and mutilnewestver = #{mutilnewestver}</if>
+            <if test="token != null  and token != ''">and token = #{token}</if>
+            <if test="falg != null ">and falg = #{falg}</if>
+            <if test="userip != null  and userip != ''">and userIP = #{userip}</if>
+            <if test="userport != null  and userport != ''">and userPort = #{userport}</if>
+        </where>
+    </select>
+
+    <select id="selectUserinfoById" parameterType="Long" resultMap="UserinfoResult">
+        <include refid="selectUserinfoVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertUserinfo" parameterType="Userinfo" useGeneratedKeys="true" keyProperty="id">
+        insert into userinfo
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userid != null  and userid != ''">userid,</if>
+            <if test="username != null  and username != ''">username,</if>
+            <if test="password != null  and password != ''">password,</if>
+            <if test="paypassword != null  and paypassword != ''">paypassword,</if>
+            <if test="headaddr != null  and headaddr != ''">headaddr,</if>
+            <if test="nickname != null  and nickname != ''">nickname,</if>
+            <if test="sex != null ">sex,</if>
+            <if test="birthday != null ">birthday,</if>
+            <if test="nation != null  and nation != ''">nation,</if>
+            <if test="tastepre != null ">tastepre,</if>
+            <if test="phone != null  and phone != ''">phone,</if>
+            <if test="growvalue != null ">growvalue,</if>
+            <if test="email != null  and email != ''">email,</if>
+            <if test="userinfover != null  and userinfover != ''">userinfover,</if>
+            <if test="mutilnewestver != null  and mutilnewestver != ''">mutilnewestver,</if>
+            <if test="token != null  and token != ''">token,</if>
+            <if test="falg != null ">falg,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="userip != null  and userip != ''">userIP,</if>
+            <if test="userport != null  and userport != ''">userPort,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userid != null  and userid != ''">#{userid},</if>
+            <if test="username != null  and username != ''">#{username},</if>
+            <if test="password != null  and password != ''">#{password},</if>
+            <if test="paypassword != null  and paypassword != ''">#{paypassword},</if>
+            <if test="headaddr != null  and headaddr != ''">#{headaddr},</if>
+            <if test="nickname != null  and nickname != ''">#{nickname},</if>
+            <if test="sex != null ">#{sex},</if>
+            <if test="birthday != null ">#{birthday},</if>
+            <if test="nation != null  and nation != ''">#{nation},</if>
+            <if test="tastepre != null ">#{tastepre},</if>
+            <if test="phone != null  and phone != ''">#{phone},</if>
+            <if test="growvalue != null ">#{growvalue},</if>
+            <if test="email != null  and email != ''">#{email},</if>
+            <if test="userinfover != null  and userinfover != ''">#{userinfover},</if>
+            <if test="mutilnewestver != null  and mutilnewestver != ''">#{mutilnewestver},</if>
+            <if test="token != null  and token != ''">#{token},</if>
+            <if test="falg != null ">#{falg},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="userip != null  and userip != ''">#{userip},</if>
+            <if test="userport != null  and userport != ''">#{userport},</if>
+        </trim>
+    </insert>
+
+    <update id="updateUserinfo" parameterType="Userinfo">
+        update userinfo
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userid != null  and userid != ''">userid = #{userid},</if>
+            <if test="username != null  and username != ''">username = #{username},</if>
+            <if test="password != null  and password != ''">password = #{password},</if>
+            <if test="paypassword != null  and paypassword != ''">paypassword = #{paypassword},</if>
+            <if test="headaddr != null  and headaddr != ''">headaddr = #{headaddr},</if>
+            <if test="nickname != null  and nickname != ''">nickname = #{nickname},</if>
+            <if test="sex != null ">sex = #{sex},</if>
+            <if test="birthday != null ">birthday = #{birthday},</if>
+            <if test="nation != null  and nation != ''">nation = #{nation},</if>
+            <if test="tastepre != null ">tastepre = #{tastepre},</if>
+            <if test="phone != null  and phone != ''">phone = #{phone},</if>
+            <if test="growvalue != null ">growvalue = #{growvalue},</if>
+            <if test="email != null  and email != ''">email = #{email},</if>
+            <if test="userinfover != null  and userinfover != ''">userinfover = #{userinfover},</if>
+            <if test="mutilnewestver != null  and mutilnewestver != ''">mutilnewestver = #{mutilnewestver},</if>
+            <if test="token != null  and token != ''">token = #{token},</if>
+            <if test="falg != null ">falg = #{falg},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="userip != null  and userip != ''">userIP = #{userip},</if>
+            <if test="userport != null  and userport != ''">userPort = #{userport},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteUserinfoById" parameterType="Long">
+        delete from userinfo where id = #{id}
+    </delete>
+
+    <delete id="deleteUserinfoByIds" parameterType="String">
+        delete from userinfo where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

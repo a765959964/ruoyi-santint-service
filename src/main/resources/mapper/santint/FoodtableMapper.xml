@@ -1,0 +1,410 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.santint.mapper.FoodtableMapper">
+
+    <resultMap type="Foodtable" id="FoodtableResult">
+        <result property="id" column="id"/>
+        <result property="foodid" column="foodid"/>
+        <result property="global" column="global"/>
+        <result property="score" column="score"/>
+        <result property="scorecount" column="scorecount"/>
+        <result property="sales" column="sales"/>
+        <result property="price" column="price"/>
+        <result property="iconaddress" column="iconaddress"/>
+        <result property="imageaddress" column="imageaddress"/>
+        <result property="foodname" column="foodname"/>
+        <result property="sour" column="sour"/>
+        <result property="sweet" column="sweet"/>
+        <result property="salty" column="salty"/>
+        <result property="hot" column="hot"/>
+        <result property="authorname" column="authorname"/>
+        <result property="authorbrief" column="authorbrief"/>
+        <result property="authoricon" column="authoricon"/>
+        <result property="authordetail" column="authordetail"/>
+        <result property="foodbrief" column="foodbrief"/>
+        <result property="fooddetail" column="fooddetail"/>
+        <result property="matchfoodnum" column="matchfoodnum"/>
+        <result property="matchfoodid" column="matchfoodid"/>
+        <result property="foodstat" column="foodstat"/>
+        <result property="jsonpath" column="jsonpath"/>
+        <result property="foodtypeId" column="foodtype_id"/>
+        <result property="isdel" column="isdel"/>
+        <result property="foodCommonId" column="food_common_id"/>
+        <result property="materialId" column="material_id"/>
+        <result property="tasteId" column="taste_id"/>
+        <result property="foodtypeField" column="foodtype_field"/>
+        <result property="foodcommonId" column="foodcommon_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="wastetime" column="wastetime"/>
+        <result property="version" column="version"/>
+        <association property="tFoodCommonType" column="foodtype_field" javaType="TFoodCommonType"
+                     resultMap="tFoodCommonTypeResult"/>
+
+    </resultMap>
+
+
+    <resultMap type="TFoodCommonType" id="tFoodCommonTypeResult">
+        <result property="id" column="id"/>
+        <result property="code" column="code"/>
+        <result property="name" column="name"/>
+        <result property="level" column="level"/>
+        <result property="pcode" column="pcode"/>
+        <result property="status" column="status"/>
+        <result property="isdel" column="isdel"/>
+        <result property="parentName" column="parent_name"/>
+    </resultMap>
+
+    <sql id="selectFoodtableVo">
+        select id, foodid, global, score, scorecount, sales, price, iconaddress, imageaddress, foodname, sour, sweet,
+        salty, hot, authorname, authorbrief, authoricon, authordetail, foodbrief, fooddetail, matchfoodnum, matchfoodid,
+        foodstat, jsonpath, foodtype_id, isdel, food_common_id, material_id, taste_id, foodtype_field, foodcommon_id,
+        create_time, wastetime, version from foodtable
+    </sql>
+
+    <select id="getFoodtableList" resultType="java.util.Map">
+        SELECT
+        ft.foodid,
+        ft.foodname,
+        ft.iconaddress,
+        ft.create_time,
+        -- t.cxCode,
+        t.cxName,
+        -- t1.scCode,
+        t1.scName,
+        -- t2.wxCode,
+        t2.wxName
+        FROM
+        foodtable ft
+        inner join
+        ( select t2.`code`,CONCAT(t.`code`,",",t1.`code`,",",t2.`code`) cxCode,
+        CONCAT(t.`name`,",",t1.`name`,",",t2.`name`) cxName from t_food_common_type t
+        INNER JOIN t_food_common_type t1 on t1.pcode = t.`code`
+        inner join t_food_common_type t2 on t2.pcode = t1.`code`
+        where t.`status` = 1 and t1.`status` = 1 and t2.`status` = 1 ) t
+        on t.`code` = ft.foodtype_field
+        INNER JOIN
+        ( select t2.`code`,CONCAT(t.`code`,",",t1.`code`,",",t2.`code`) scCode,
+        CONCAT(t.`name`,",",t1.`name`,",",t2.`name`) scName from t_food_common_type t
+        INNER JOIN t_food_common_type t1 on t1.pcode = t.`code`
+        inner join t_food_common_type t2 on t2.pcode = t1.`code`
+        where t.`status` = 2 and t1.`status` = 2 and t2.`status` = 2 ) t1
+        on t1.`code` = ft.material_id
+        INNER JOIN
+
+        ( select t1.`code`,CONCAT(t.`code`,",",t1.`code`) wxCode,
+        CONCAT(t.`name`,",",t1.`name`) wxName from t_food_common_type t
+        INNER JOIN t_food_common_type t1 on t1.pcode = t.`code`
+        where t.`status` = 3 and t1.`status` = 3 ) t2
+        on t2.`code` = ft.taste_id
+
+        where 1=1
+
+        <if test="foodtypeField != null and foodtypeField != ''">
+            and FIND_IN_SET(#{foodtypeField},t.cxCode)
+        </if>
+
+        <if test="foodname !=null and foodname != ''">
+            and ft.foodname like concat('%',#{foodname} ,'%')
+        </if>
+
+        <if test="beginTime != null and beginTime != ''"><!-- 开始时间检索 -->
+            AND date_format(ft.create_time,'%y%m%d') <![CDATA[ >=   date_format(#{beginTime},'%y%m%d') ]]>
+        </if>
+        <if test="endTime != null and endTime != ''"><!-- 结束时间检索 -->
+            AND date_format(ft.create_time,'%y%m%d') <![CDATA[ <=  date_format(#{endTime},'%y%m%d') ]]>
+        </if>
+
+
+    </select>
+
+
+    <select id="getFoodtableLists" resultType="java.util.Map">
+        SELECT
+        ft.foodid,
+        ft.foodname,
+        ft.foodtype_field,
+        ft.taste_id,
+        ft.material_id,
+        ft.iconaddress,
+        fct.name foodtypeName,
+        ft.create_time
+        FROM
+        foodtable ft
+        LEFT JOIN t_food_common_type fct ON fct.`code` = ft.foodtype_field
+        WHERE
+        fct.isdel = 0
+        AND fct.`status` = 1
+        <choose>
+            <when test="level == 1 and foodtypeField!=null and foodtypeField !=''">
+                AND (
+                ft.foodtype_field = #{foodtypeField}
+                OR ft.foodtype_field IN (
+
+                SELECT
+                t.`code`
+                FROM
+                t_food_common_type t
+                WHERE
+                t.`pcode` = #{foodtypeField}
+                AND t.`status` = 1
+
+                )
+                )
+            </when>
+            <when test="level == 0 and level = 2 and foodtypeField!=null and foodtypeField !=''">
+                AND ( ft.foodtype_field = #{foodtypeField}
+                OR ft.foodtype_field IN (
+                SELECT
+                t.`code`
+                FROM
+                t_food_common_type t
+                WHERE
+                t.`status` = 1
+                AND t.pcode IN (
+                SELECT
+                t.`code`
+                FROM
+                t_food_common_type t
+                WHERE
+                t.`pcode` = #{foodtypeField}
+                AND t.`status` = 1
+                )
+                )
+                )
+            </when>
+            <otherwise>
+
+            </otherwise>
+
+        </choose>
+    </select>
+
+
+    <select id="selectFoodtableList" parameterType="Foodtable" resultMap="FoodtableResult">
+        SELECT
+        ft.foodid,
+        ft.foodname,
+        ft.foodtype_field,
+        ft.taste_id,
+        ft.material_id,
+        ft.iconaddress
+        FROM
+        foodtable ft
+        LEFT JOIN t_food_common_type fct ON fct.`code` = ft.foodtype_field
+        WHERE
+        fct.isdel = 0
+        AND fct.`status` = 1
+        <choose>
+            <when test="level == 1  and foodtypeField != null and foodtypeField != '' ">
+                AND (
+                ft.foodtype_field = 0101
+                OR ft.foodtype_field IN (
+
+                SELECT
+                t.`code`
+                FROM
+                t_food_common_type t
+                WHERE
+                t.`pcode` = 0101
+                AND t.`status` = 1
+
+                )
+                )
+            </when>
+            <otherwise>
+                AND ( ft.foodtype_field = #{foodtypeField}
+                OR ft.foodtype_field IN (
+                SELECT
+                t.`code`
+                FROM
+                t_food_common_type t
+                WHERE
+                t.`status` = 1
+                AND t.pcode IN (
+                SELECT
+                t.`code`
+                FROM
+                t_food_common_type t
+                WHERE
+                t.`pcode` = #{foodtypeField}
+                AND t.`status` = 1
+                )
+                )
+                )
+            </otherwise>
+
+        </choose>
+
+
+        <!--  <include refid="selectFoodtableVo"/>
+          <where>
+              <if test="foodid != null "> and foodid = #{foodid}</if>
+              <if test="global != null "> and global = #{global}</if>
+              <if test="score != null "> and score = #{score}</if>
+              <if test="scorecount != null "> and scorecount = #{scorecount}</if>
+              <if test="sales != null "> and sales = #{sales}</if>
+              <if test="price != null "> and price = #{price}</if>
+              <if test="iconaddress != null  and iconaddress != ''"> and iconaddress = #{iconaddress}</if>
+              <if test="imageaddress != null  and imageaddress != ''"> and imageaddress = #{imageaddress}</if>
+              <if test="foodname != null  and foodname != ''"> and foodname like concat('%', #{foodname}, '%')</if>
+              <if test="sour != null "> and sour = #{sour}</if>
+              <if test="sweet != null "> and sweet = #{sweet}</if>
+              <if test="salty != null "> and salty = #{salty}</if>
+              <if test="hot != null "> and hot = #{hot}</if>
+              <if test="authorname != null  and authorname != ''"> and authorname like concat('%', #{authorname}, '%')</if>
+              <if test="authorbrief != null  and authorbrief != ''"> and authorbrief = #{authorbrief}</if>
+              <if test="authoricon != null  and authoricon != ''"> and authoricon = #{authoricon}</if>
+              <if test="authordetail != null  and authordetail != ''"> and authordetail = #{authordetail}</if>
+              <if test="foodbrief != null  and foodbrief != ''"> and foodbrief = #{foodbrief}</if>
+              <if test="fooddetail != null  and fooddetail != ''"> and fooddetail = #{fooddetail}</if>
+              <if test="matchfoodnum != null  and matchfoodnum != ''"> and matchfoodnum = #{matchfoodnum}</if>
+              <if test="matchfoodid != null  and matchfoodid != ''"> and matchfoodid = #{matchfoodid}</if>
+              <if test="foodstat != null "> and foodstat = #{foodstat}</if>
+              <if test="jsonpath != null  and jsonpath != ''"> and jsonpath = #{jsonpath}</if>
+              <if test="foodtypeId != null "> and foodtype_id = #{foodtypeId}</if>
+              <if test="isdel != null "> and isdel = #{isdel}</if>
+              <if test="foodCommonId != null  and foodCommonId != ''"> and food_common_id = #{foodCommonId}</if>
+              <if test="materialId != null  and materialId != ''"> and material_id = #{materialId}</if>
+              <if test="tasteId != null  and tasteId != ''"> and taste_id = #{tasteId}</if>
+              <if test="foodtypeField != null  and foodtypeField != ''"> and foodtype_field = #{foodtypeField}</if>
+              <if test="foodcommonId != null "> and foodcommon_id = #{foodcommonId}</if>
+              <if test="wastetime != null "> and wastetime = #{wastetime}</if>
+              <if test="version != null  and version != ''"> and version = #{version}</if>
+          </where>-->
+    </select>
+
+    <select id="selectFoodtableById" parameterType="Long" resultMap="FoodtableResult">
+        <include refid="selectFoodtableVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertFoodtable" parameterType="Foodtable">
+        insert into foodtable
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null ">id,</if>
+            <if test="foodid != null ">foodid,</if>
+            <if test="global != null ">global,</if>
+            <if test="score != null ">score,</if>
+            <if test="scorecount != null ">scorecount,</if>
+            <if test="sales != null ">sales,</if>
+            <if test="price != null ">price,</if>
+            <if test="iconaddress != null  and iconaddress != ''">iconaddress,</if>
+            <if test="imageaddress != null  and imageaddress != ''">imageaddress,</if>
+            <if test="foodname != null  and foodname != ''">foodname,</if>
+            <if test="sour != null ">sour,</if>
+            <if test="sweet != null ">sweet,</if>
+            <if test="salty != null ">salty,</if>
+            <if test="hot != null ">hot,</if>
+            <if test="authorname != null  and authorname != ''">authorname,</if>
+            <if test="authorbrief != null  and authorbrief != ''">authorbrief,</if>
+            <if test="authoricon != null  and authoricon != ''">authoricon,</if>
+            <if test="authordetail != null  and authordetail != ''">authordetail,</if>
+            <if test="foodbrief != null  and foodbrief != ''">foodbrief,</if>
+            <if test="fooddetail != null  and fooddetail != ''">fooddetail,</if>
+            <if test="matchfoodnum != null  and matchfoodnum != ''">matchfoodnum,</if>
+            <if test="matchfoodid != null  and matchfoodid != ''">matchfoodid,</if>
+            <if test="foodstat != null ">foodstat,</if>
+            <if test="jsonpath != null  and jsonpath != ''">jsonpath,</if>
+            <if test="foodtypeId != null ">foodtype_id,</if>
+            <if test="isdel != null ">isdel,</if>
+            <if test="foodCommonId != null  and foodCommonId != ''">food_common_id,</if>
+            <if test="materialId != null  and materialId != ''">material_id,</if>
+            <if test="tasteId != null  and tasteId != ''">taste_id,</if>
+            <if test="foodtypeField != null  and foodtypeField != ''">foodtype_field,</if>
+            <if test="foodcommonId != null ">foodcommon_id,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="wastetime != null ">wastetime,</if>
+            <if test="version != null  and version != ''">version,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null ">#{id},</if>
+            <if test="foodid != null ">#{foodid},</if>
+            <if test="global != null ">#{global},</if>
+            <if test="score != null ">#{score},</if>
+            <if test="scorecount != null ">#{scorecount},</if>
+            <if test="sales != null ">#{sales},</if>
+            <if test="price != null ">#{price},</if>
+            <if test="iconaddress != null  and iconaddress != ''">#{iconaddress},</if>
+            <if test="imageaddress != null  and imageaddress != ''">#{imageaddress},</if>
+            <if test="foodname != null  and foodname != ''">#{foodname},</if>
+            <if test="sour != null ">#{sour},</if>
+            <if test="sweet != null ">#{sweet},</if>
+            <if test="salty != null ">#{salty},</if>
+            <if test="hot != null ">#{hot},</if>
+            <if test="authorname != null  and authorname != ''">#{authorname},</if>
+            <if test="authorbrief != null  and authorbrief != ''">#{authorbrief},</if>
+            <if test="authoricon != null  and authoricon != ''">#{authoricon},</if>
+            <if test="authordetail != null  and authordetail != ''">#{authordetail},</if>
+            <if test="foodbrief != null  and foodbrief != ''">#{foodbrief},</if>
+            <if test="fooddetail != null  and fooddetail != ''">#{fooddetail},</if>
+            <if test="matchfoodnum != null  and matchfoodnum != ''">#{matchfoodnum},</if>
+            <if test="matchfoodid != null  and matchfoodid != ''">#{matchfoodid},</if>
+            <if test="foodstat != null ">#{foodstat},</if>
+            <if test="jsonpath != null  and jsonpath != ''">#{jsonpath},</if>
+            <if test="foodtypeId != null ">#{foodtypeId},</if>
+            <if test="isdel != null ">#{isdel},</if>
+            <if test="foodCommonId != null  and foodCommonId != ''">#{foodCommonId},</if>
+            <if test="materialId != null  and materialId != ''">#{materialId},</if>
+            <if test="tasteId != null  and tasteId != ''">#{tasteId},</if>
+            <if test="foodtypeField != null  and foodtypeField != ''">#{foodtypeField},</if>
+            <if test="foodcommonId != null ">#{foodcommonId},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="wastetime != null ">#{wastetime},</if>
+            <if test="version != null  and version != ''">#{version},</if>
+        </trim>
+    </insert>
+
+    <update id="updateFoodtable" parameterType="Foodtable">
+        update foodtable
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="foodid != null ">foodid = #{foodid},</if>
+            <if test="global != null ">global = #{global},</if>
+            <if test="score != null ">score = #{score},</if>
+            <if test="scorecount != null ">scorecount = #{scorecount},</if>
+            <if test="sales != null ">sales = #{sales},</if>
+            <if test="price != null ">price = #{price},</if>
+            <if test="iconaddress != null  and iconaddress != ''">iconaddress = #{iconaddress},</if>
+            <if test="imageaddress != null  and imageaddress != ''">imageaddress = #{imageaddress},</if>
+            <if test="foodname != null  and foodname != ''">foodname = #{foodname},</if>
+            <if test="sour != null ">sour = #{sour},</if>
+            <if test="sweet != null ">sweet = #{sweet},</if>
+            <if test="salty != null ">salty = #{salty},</if>
+            <if test="hot != null ">hot = #{hot},</if>
+            <if test="authorname != null  and authorname != ''">authorname = #{authorname},</if>
+            <if test="authorbrief != null  and authorbrief != ''">authorbrief = #{authorbrief},</if>
+            <if test="authoricon != null  and authoricon != ''">authoricon = #{authoricon},</if>
+            <if test="authordetail != null  and authordetail != ''">authordetail = #{authordetail},</if>
+            <if test="foodbrief != null  and foodbrief != ''">foodbrief = #{foodbrief},</if>
+            <if test="fooddetail != null  and fooddetail != ''">fooddetail = #{fooddetail},</if>
+            <if test="matchfoodnum != null  and matchfoodnum != ''">matchfoodnum = #{matchfoodnum},</if>
+            <if test="matchfoodid != null  and matchfoodid != ''">matchfoodid = #{matchfoodid},</if>
+            <if test="foodstat != null ">foodstat = #{foodstat},</if>
+            <if test="jsonpath != null  and jsonpath != ''">jsonpath = #{jsonpath},</if>
+            <if test="foodtypeId != null ">foodtype_id = #{foodtypeId},</if>
+            <if test="isdel != null ">isdel = #{isdel},</if>
+            <if test="foodCommonId != null  and foodCommonId != ''">food_common_id = #{foodCommonId},</if>
+            <if test="materialId != null  and materialId != ''">material_id = #{materialId},</if>
+            <if test="tasteId != null  and tasteId != ''">taste_id = #{tasteId},</if>
+            <if test="foodtypeField != null  and foodtypeField != ''">foodtype_field = #{foodtypeField},</if>
+            <if test="foodcommonId != null ">foodcommon_id = #{foodcommonId},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="wastetime != null ">wastetime = #{wastetime},</if>
+            <if test="version != null  and version != ''">version = #{version},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteFoodtableById" parameterType="Long">
+        delete from foodtable where id = #{id}
+    </delete>
+
+    <delete id="deleteFoodtableByIds" parameterType="String">
+        delete from foodtable where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>
