@@ -9,7 +9,7 @@ import com.ruoyi.common.core.domain.BaseEntity;
 /**
  * 菜品对象 foodtable
  *  zf
- * @author zfaa
+ * @author zfaaaaa
  * @date 2019-08-19
  */
 public class Foodtable extends BaseEntity {

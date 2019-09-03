@@ -8,7 +8,7 @@ import com.ruoyi.common.core.domain.TreeEntity;
 /**
  * 菜系食材味型分类对象 t_food_common_type
  *
- * @author zf
+ * @author zf aaaa
  * @date 2019-08-19
  */
 public class TFoodCommonType extends TreeEntity {
